@@ -1,12 +1,14 @@
 var express = require('express');
 var router = express.Router();
 const userCtrl = require('../controllers/userController');
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
 
-router.post('/register', userCtrl.register);
-router.post('/login', userCtrl.login);
+const rpc = new userCtrl()
+
+router.post('/register', rpc.register);
+router.post('/login', rpc.login);
+router.post('/logout', rpc.logout);
+router.put('/:id', rpc.update);
+router.get('/:id', rpc.getUser);
+router.get('/', rpc.getUsers);
 
 module.exports = router;
