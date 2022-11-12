@@ -4,7 +4,6 @@ const {
 } = require('../models');
 
 const RefreshTokenServices = require('../services/refreshTokenServices');
-// const refreshTokenService = new refreshTokenServices()
 
 const Validator = require('fastest-validator');
 const v = new Validator();
@@ -19,7 +18,6 @@ const {
   } = process.env;
 
 class userController{
-    // RefreshTokenService = new RefreshTokenServices()
     constructor(){
         this.refreshTokenService = new RefreshTokenServices()
         this.login = this.login.bind(this)
@@ -63,8 +61,7 @@ class userController{
             const token = jwt.sign({ user }, JWT_SECRET, { expiresIn: JWT_ACCESS_TOKEN_EXPIRED });
             const createrefreshToken =  jwt.sign({ user }, JWT_SECRET_REFRESH_TOKEN, { expiresIn: JWT_REFRESH_TOKEN_EXPIRED });
 
-            const tes = await this.RefreshTokenService.create();
-            // const tes = await this.refreshTokenService.create();
+            const tes = await this.refreshTokenService.create();
 
             return res.json({
                 status: 'success',
@@ -73,6 +70,7 @@ class userController{
                 }
             });
         } catch (error) {
+            console.log(error)
             if (error.code === 'ECONNREFUSED') {
                 return res.status(500).json({
                     status: 'error',
