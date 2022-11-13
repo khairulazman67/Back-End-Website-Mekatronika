@@ -7,11 +7,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull : false,
         },
         kategori_id :{
-            type : Sequelize.INTEGER,
+            type : DataTypes.INTEGER,
             allowNull : false
         },
         file:{
-            type : Sequelize.STRING,
+            type : DataTypes.STRING,
             allowNull : true
         },
         createdAt :{

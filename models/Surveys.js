@@ -7,11 +7,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull : false,
         },
         judul :{
-            type : Sequelize.STRING,
+            type : DataTypes.STRING,
             allowNull : false
         },
         url:{
-            type : Sequelize.STRING,
+            type : DataTypes.STRING,
             allowNull : true
         },
         createdAt :{
