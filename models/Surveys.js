@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey : true,
             allowNull : false,
         },
-        judul :{
+        judul:{
             type : DataTypes.STRING,
             allowNull : false
         },
@@ -14,12 +14,12 @@ module.exports = (sequelize, DataTypes) => {
             type : DataTypes.STRING,
             allowNull : true
         },
-        createdAt :{
+        createdAt:{
             field : 'created_at',
             type : DataTypes.DATE,
             allowNull : false
         },
-        updatedAt :{
+        updatedAt:{
             field : 'updated_at',
             type : DataTypes.DATE,
             allowNull : false
