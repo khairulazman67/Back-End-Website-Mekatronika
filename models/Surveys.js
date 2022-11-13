@@ -1,18 +1,18 @@
 module.exports = (sequelize, DataTypes) => {
-    const RefreshToken = sequelize.define('RefreshToken',{
-        id:{
+    const RefreshToken = sequelize.define('lectures',{
+        id: {
             type : DataTypes.INTEGER,
             autoIncrement : true,
             primaryKey : true,
+            allowNull : false,
+        },
+        judul :{
+            type : Sequelize.STRING,
             allowNull : false
         },
-        token :{
-            type:DataTypes.TEXT,
-            allowNUll :false,            
-        },
-        user_id : {
-            type :DataTypes.INTEGER,
-            allowNull:false
+        url:{
+            type : Sequelize.STRING,
+            allowNull : true
         },
         createdAt :{
             field : 'created_at',
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull : false
         }
     },{
-        tableName : 'refresh_tokens',
+        tableName : 'lectures',
         timestamp :true
     });
     return RefreshToken;

@@ -3,7 +3,9 @@ const {
     User
 } = require('../models');
 
-const RefreshTokenServices = require('../services/refreshTokenServices');
+const {
+    RefreshTokenServices,
+} = require('../services');
 
 const Validator = require('fastest-validator');
 const v = new Validator();
@@ -19,8 +21,9 @@ const {
 
 class userController{
     constructor(){
-        this.refreshTokenService = new RefreshTokenServices()
+        this.refreshTokenServices = new RefreshTokenServices()
         this.login = this.login.bind(this)
+        this.logout = this.logout.bind(this)
     }
     async login (req, res) {
         try {
@@ -59,14 +62,16 @@ class userController{
             }
             
             const token = jwt.sign({ user }, JWT_SECRET, { expiresIn: JWT_ACCESS_TOKEN_EXPIRED });
-            const createrefreshToken =  jwt.sign({ user }, JWT_SECRET_REFRESH_TOKEN, { expiresIn: JWT_REFRESH_TOKEN_EXPIRED });
+            const refreshToken =  jwt.sign({ user }, JWT_SECRET_REFRESH_TOKEN, { expiresIn: JWT_REFRESH_TOKEN_EXPIRED });
 
-            const tes = await this.refreshTokenService.create();
+            const saveToken = await this.refreshTokenServices.createToken(refreshToken, user.id);
 
             return res.json({
                 status: 'success',
                 data: {
-                    tes
+                    token,
+                    id: saveToken.id,
+                    refresh_token: refreshToken
                 }
             });
         } catch (error) {
@@ -94,11 +99,7 @@ class userController{
                 });
             }
 
-            await RefreshToken.destroy({
-                where: {
-                    user_id: userId
-                }
-            });
+            await this.refreshTokenServices.destroyToken(userId)
 
             return res.json({
                 status: 'success',
@@ -116,8 +117,6 @@ class userController{
                 name: 'string|empty:false',
                 username: 'string|empty:false',
                 password: 'string|min:6',
-                profession: 'string|optional',
-                avatar: 'string|optional'
             };
 
             const validate = v.validate(req.body, schema);
@@ -156,16 +155,12 @@ class userController{
             const password = await bcrypt.hash(req.body.password, 10);
             const {
                 name,
-                profession,
-                avatar
             } = req.body;
 
             await user.update({
                 username,
                 password,
-                name,
-                profession,
-                avatar
+                name
             });
 
             return res.json({
@@ -173,9 +168,7 @@ class userController{
                 data: {
                     id: user.id,
                     name,
-                    username,
-                    profession,
-                    avatar
+                    username
                 }
             });
         } catch (error) {

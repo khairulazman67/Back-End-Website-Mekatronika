@@ -1,5 +1,5 @@
-const refreshTokenServices = require('./refreshTokenServices');
+const RefreshTokenServices = require('./refreshTokenServices');
 
 module.exports = {
-    refreshTokenServices,
+    RefreshTokenServices,
 };

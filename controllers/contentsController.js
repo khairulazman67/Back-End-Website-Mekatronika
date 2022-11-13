@@ -1,22 +1,8 @@
 const { 
-    User,
-    RefreshToken
+    User
 } = require('../models');
 
-const {
-    RefreshTokenServices,
-} = require('../services');
-
 const Validator = require('fastest-validator');
-const jwt = require('jsonwebtoken');
-
-const {
-    URL_SERVICE_USER,
-    JWT_SECRET,
-    JWT_SECRET_REFRESH_TOKEN,
-    JWT_ACCESS_TOKEN_EXPIRED,
-    JWT_REFRESH_TOKEN_EXPIRED
-  } = process.env;
 
 const v = new Validator();
 
