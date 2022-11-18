@@ -1,32 +1,32 @@
-module.exports = (sequelize, DataTypes) => {
-    const RefreshToken = sequelize.define('categories',{
-        id: {
+const { DataTypes } = require("sequelize")
+
+module.exports =(sequelize,DataTypes) =>{
+    const Categories = sequelize.define('Categories',{
+        id:{
             type : DataTypes.INTEGER,
             autoIncrement : true,
             primaryKey : true,
-            allowNull : false,
+            allowNull:false
         },
         kategori:{
             type : DataTypes.STRING,
             allowNull : false
         },
-        keterangan:{
-            type : DataTypes.STRING,
-            allowNull : true
+        keterangan :{
+            type: DataTypes.STRING,
+            allowNull:true
         },
-        createdAt :{
+        createdAt:{
             field : 'created_at',
-            type : DataTypes.DATE,
-            allowNull : false
+            type  : DataTypes.DATE
         },
-        updatedAt :{
+        updatedAt : {
             field : 'updated_at',
-            type : DataTypes.DATE,
-            allowNull : false
+            type : DataTypes.DATE
         }
     },{
-        tableName : 'categories',
-        timestamp :true
+        tableName :'categories',
+        timestamps: true
     });
-    return RefreshToken;
+    return Categories;
 }

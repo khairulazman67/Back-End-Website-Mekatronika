@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const RefreshToken = sequelize.define('lectures',{
+    const Surveys = sequelize.define('lectures',{
         id: {
             type : DataTypes.INTEGER,
             autoIncrement : true,
@@ -28,5 +28,5 @@ module.exports = (sequelize, DataTypes) => {
         tableName : 'lectures',
         timestamp :true
     });
-    return RefreshToken;
+    return Surveys;
 }

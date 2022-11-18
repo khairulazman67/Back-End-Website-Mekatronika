@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const RefreshToken = sequelize.define('documents',{
+    const Documents = sequelize.define('documents',{
         id: {
             type : DataTypes.INTEGER,
             autoIncrement : true,
@@ -28,5 +28,5 @@ module.exports = (sequelize, DataTypes) => {
         tableName : 'documents',
         timestamp :true
     });
-    return RefreshToken;
+    return Documents;
 }

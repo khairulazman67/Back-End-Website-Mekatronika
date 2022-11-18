@@ -1,135 +1,171 @@
 const { 
-    User
+    User,
+    Categories,
+    Contents
 } = require('../models');
 
 const Validator = require('fastest-validator');
 
 const v = new Validator();
 
-class refreshTokenController{
-    constructor(){
-        this.refreshTokenServices = new RefreshTokenServices()
-        this.create = this.create.bind(this)
-        this.getToken = this.getToken.bind(this)
-        this.refreshToken = this.refreshToken.bind(this)
-    }
-
-    async create (req, res){
-        const userId = req.body.user_id;
-        const refreshToken = req.body.refresh_token;
-        
-        const schema = {
-            refresh_token: 'string',
-            user_id: 'number'
-        }
-        
-        const validate = v.validate(req.body, schema);
-        if (validate.length) {
-            return res.status(400).json({
-            status: 'error',
-            message: validate
-            });
-        }
-        
-        const user = await User.findByPk(userId);
-        if (!user) {
-            return res.status(404).json({
-            status: 'error',
-            message: 'user not found'
-            });
-        }
-        
-        const createdRefreshToken = await this.refreshTokenServices.createToken(refreshToken, userId);
-        
-        return res.json({
-            status: 'success',
-            data: {
-                id: createdRefreshToken.id
+class contensController{
+    async createdContens (req, res){
+        try{
+            const schema = {
+                judul: 'string|empty:false',
+                isi: 'string|empty:false',
+                kategori_id: 'number',
+                ringkasan: 'string|optional',
+                foto: 'string|optional'
             }
-        });
-    }
-
-    async refreshToken(req, res){
-        try {
-            const refreshToken = req.body.refresh_token;
-            const username = req.body.username;
         
-            if (!refreshToken || !username) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'invalid token'
+            const validate = v.validate(req.body, schema);
+        
+            if (validate.length) {
+                return res.status(400).json({
+                    status: 'error',
+                    message: validate
+                });
+            }
+        
+            const categories = await Categories.findOne({
+                where: { id: req.body.kategori_id }
             });
+        
+            if (!categories) {
+                return res.status(409).json({
+                    status: 'error',
+                    message: 'categories not available'
+                });
+            }
+        
+            const data = {
+                judul : req.body.judul,
+                isi: req.body.isi,
+                kategori_id: req.body.kategori_id,
+                ringkasan: req.body.ringkasan,
+                foto: req.body.foto
             };
-
-            const token = await this.refreshTokenServices.getToken(refreshToken)
-
-            if (!token) {
-                return res.status(400).json({
-                status: 'error',
-                message: 'invalid token'
-                });
-            }
-
-            jwt.verify(refreshToken, JWT_SECRET_REFRESH_TOKEN, (err, decoded) => {
-            if (err) {
-                return res.status(403).json({
-                    status: 'error',
-                    message: err.message
-                });
-            }
         
-            if (username !== decoded.user.username) {
-                return res.status(400).json({
-                    status: 'error',
-                    message: 'username is not valid'
-                });
-            }
-
-            const token = jwt.sign({ data: decoded.user }, JWT_SECRET, {expiresIn: JWT_ACCESS_TOKEN_EXPIRED });
-                return res.json({
-                    status: 'success',
-                    data: {
-                        token
-                    }
-                });
+            const createdContens = await Contents.create(data);
+        
+            return res.json({
+                status: 'success',
+                data: {
+                    createdContens
+                }
             });
-        }catch (error) {
-            console.log(error)
-            if (error.code === 'ECONNREFUSED') {
-                return res.status(500).json({
-                    status: 'error',
-                    message: 'service unavailable'
-                });
-            }
+        }catch (error){
             return res.status(500).json({
                 msg: error.message
             });
         }
     }
 
-    async getToken (req, res){
-        const refreshToken = req.body.refresh_token;
-    
-        if (!refreshToken) {
-          return res.status(400).json({
-            status: 'error',
-            message: 'invalid token'
-          });
-        };
+    async updateContents (req, res) {
+        try {
+            const schema = {
+                judul: 'string',
+                isi: 'string',
+                kategori_id: 'number',
+                ringkasan: 'string|optional',
+                foto: 'string|optional'
+            }
+            
+            const validate = v.validate(req.body, schema);
+        
+            if (validate.length) {
+                return res.status(400).json({
+                    status: 'error',
+                    message: validate
+                });
+            }
+        
+            const categories = await Categories.findOne({
+                where: { id: req.body.kategori_id }
+            });
+        
+            if (!categories) {
+                return res.status(409).json({
+                    status: 'error',
+                    message: 'categories not available'
+                });
+            }
+            const id = req.params.id;
+            const contents = await Contents.findByPk(id);
+            if (!contents) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: 'content not found'
+                });
+            }
 
-        const token = await this.refreshTokenServices.getToken(refreshToken)
+            const data = {
+                judul : req.body.judul,
+                isi: req.body.isi,
+                kategori_id: req.body.kategori_id,
+                ringkasan: req.body.ringkasan,
+                foto: req.body.foto
+            };
 
-        if (!token) {
-            return res.status(400).json({
-            status: 'error',
-            message: 'invalid token'
+            const updateContents  = await contents.update(data);
+
+            return res.json({
+                status: 'success',
+                data: {
+                    updateContents
+                }
+            });
+        } catch (error) {
+            return res.status(500).json({
+                msg: error.message
             });
         }
-
-        return res.json({
-            status: 'success',
-            token
-        });
     }
+
+    async getContent (req, res) {
+        try {
+            const id = req.params.id;
+            const user = await Contents.findByPk(id);
+            if (!user) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: 'content not found'
+                });
+            }
+            return res.json({
+                status: 'success',
+                data: user
+            });
+        } catch (error) {
+            return res.status(500).json({
+                msg: error.message
+            });
+        }
+    }
+
+    async getContents (req, res) {
+        try {
+            const contenIds = req.query.content_ids || [];
+
+            const sqlOPtions = {}
+            if (contenIds.length) {
+                sqlOPtions.where = {
+                    id: contenIds
+                }
+            }
+            const contents = await Contents.findAll(sqlOPtions);
+            return res.json({
+                status: 'success',
+                data: contents
+            });
+        } catch (error) {
+            return res.status(500).json({
+                msg: error.message
+            });
+        }
+    }
+
+
 }
-module.exports = refreshTokenController;
+module.exports = contensController;
