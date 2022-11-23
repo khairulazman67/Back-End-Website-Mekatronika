@@ -9,5 +9,6 @@ router.post('/', contents.createdContens);
 router.put('/:id', contents.updateContents);
 router.get('/',contents.getContents);
 router.get('/:id',contents.getContent);
+router.delete('/:id',contents.deleteContents);
 
 module.exports = router;

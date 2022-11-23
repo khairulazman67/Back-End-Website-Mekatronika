@@ -1,55 +1,51 @@
-const {
-    Categories,
+const { 
+    Documents,
 } = require('../models');
-const bcrypt = require('bcrypt');
+
 const Validator = require('fastest-validator');
 
 const v = new Validator();
 
-class categoriesController{
-    constructor(){
-        this.createdCategories = this.createdCategories.bind(this)
-    }
-    async createdCategories(req, res){
+class contensController{
+    async createdDocuments (req, res){
         try{
             const schema = {
-                kategori: 'string|empty:false',
-                keterangan: 'string|optional'
+                file: 'string|empty:false',
             }
-
+        
             const validate = v.validate(req.body, schema);
-
+        
             if (validate.length) {
                 return res.status(400).json({
                     status: 'error',
                     message: validate
-                });xx
+                });
             }
-
+        
             const data = {
-                kategori : req.body.kategori,
-                keterangan: req.body.keterangan,
+                judul : req.body.file,
+                kategori_id : 1
             };
-
-            const createdCategories = await Categories.create(data);
-
+        
+            const createdDocuments = await Documents.create(data);
+        
             return res.json({
                 status: 'success',
-                data : createdCategories
+                data: {
+                    createdDocuments
+                }
             });
-        }catch (error) {
-            console.log(error)
+        }catch (error){
             return res.status(500).json({
                 msg: error.message
             });
         }
     }
-    async updateCategories (req, res) {
+
+    async updateDocuments (req, res) {
         try {
-            
             const schema = {
-                kategori: 'string|empty:false',
-                keterangan: 'string|optional'
+                file: 'string|empty:false',
             }
             
             const validate = v.validate(req.body, schema);
@@ -60,32 +56,27 @@ class categoriesController{
                     message: validate
                 });
             }
+        
             const id = req.params.id;
-            // return res.json({
-            //     status: 'success',
-            //     data: {
-            //         id
-            //     }
-            // });
-            const categories = await Categories.findByPk(id);
-            if (!categories) {
+            const documents = await Documents.findByPk(id);
+            if (!documents) {
                 return res.status(404).json({
                     status: 'error',
-                    message: 'categories not found'
+                    message: 'Documents not found'
                 });
             }
 
             const data = {
-                kategori : req.body.kategori,
-                keterangan: req.body.keterangan,
+                file : req.body.file,
             };
 
-            const updateContents  = await categories.update(data);
+            const updateContents  = await documents.update(data);
 
             return res.json({
                 status: 'success',
-                data: updateContents
-                
+                data: {
+                    updateContents
+                }
             });
         } catch (error) {
             return res.status(500).json({
@@ -93,14 +84,20 @@ class categoriesController{
             });
         }
     }
-    
-    async getCategories (req, res) {
+
+    async getContent (req, res) {
         try {
-            const categories = await Categories.findAll()
-
+            const id = req.params.id;
+            const contents = await Contents.findByPk(id);
+            if (!contents) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: 'content not found'
+                });
+            }
             return res.json({
                 status: 'success',
-                data: categories
+                data: contents
             });
         } catch (error) {
             return res.status(500).json({
@@ -109,19 +106,41 @@ class categoriesController{
         }
     }
 
-    async deleteCategories(req, res){
+    async getContents (req, res) {
+        try {
+            const contenIds = req.query.content_ids || [];
+
+            const sqlOPtions = {}
+            if (contenIds.length) {
+                sqlOPtions.where = {
+                    id: contenIds
+                }
+            }
+            const contents = await Contents.findAll(sqlOPtions);
+            return res.json({
+                status: 'success',
+                data: contents
+            });
+        } catch (error) {
+            return res.status(500).json({
+                msg: error.message
+            });
+        }
+    }
+
+    async deleteContents(req,res){
         try{
             const id = req.params.id
             
-            const categories = await Categories.findByPk(id);
-            if (!categories) {
+            const contents = await Contents.findByPk(id);
+            if (!contents) {
                 return res.status(404).json({
                     status: 'error',
                     message: 'content not found'
                 });
             }
             
-            await Categories.destroy({
+            await Contents.destroy({
                 where: {
                     id: id
                 }
@@ -129,7 +148,7 @@ class categoriesController{
             
             return res.json({
                 status : 'success',
-                message : 'categories successfully delete'
+                message : 'content successfully delete'
             })
         }catch(error){
             return res.status(500).json({
@@ -138,4 +157,4 @@ class categoriesController{
         }
     }
 }
-module.exports = categoriesController;
+module.exports = contensController;

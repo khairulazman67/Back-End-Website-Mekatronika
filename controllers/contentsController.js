@@ -126,8 +126,8 @@ class contensController{
     async getContent (req, res) {
         try {
             const id = req.params.id;
-            const user = await Contents.findByPk(id);
-            if (!user) {
+            const contents = await Contents.findByPk(id);
+            if (!contents) {
                 return res.status(404).json({
                     status: 'error',
                     message: 'content not found'
@@ -135,7 +135,7 @@ class contensController{
             }
             return res.json({
                 status: 'success',
-                data: user
+                data: contents
             });
         } catch (error) {
             return res.status(500).json({
@@ -166,6 +166,33 @@ class contensController{
         }
     }
 
-
+    async deleteContents(req,res){
+        try{
+            const id = req.params.id
+            
+            const contents = await Contents.findByPk(id);
+            if (!contents) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: 'content not found'
+                });
+            }
+            
+            await Contents.destroy({
+                where: {
+                    id: id
+                }
+            })
+            
+            return res.json({
+                status : 'success',
+                message : 'content successfully delete'
+            })
+        }catch(error){
+            return res.status(500).json({
+                msg:error.message
+            })
+        }
+    }
 }
 module.exports = contensController;
