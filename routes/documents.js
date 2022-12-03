@@ -7,5 +7,8 @@ const documents = new documentsCtrl()
 
 router.post('/', documents.createdDocuments);
 router.put('/:id', documents.updateDocuments);
+router.get('/',documents.getDocuments);
+router.get('/:id',documents.getDocument);
+router.delete('/:id',documents.deleteDocuments);
 
 module.exports = router;

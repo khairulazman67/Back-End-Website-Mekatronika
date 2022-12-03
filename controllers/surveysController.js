@@ -1,18 +1,19 @@
 const { 
-    Documents,
+    Surveys,
 } = require('../models');
 
 const Validator = require('fastest-validator');
 
 const v = new Validator();
 
-class contensController{
-    async createdDocuments (req, res){
+class surveysController{
+    async createdSurveys (req, res){
         try{
             const schema = {
-                file: 'string|empty:false',
+                judul: 'string|empty:false',
+                url: 'string|empty:false'
             }
-        
+      
             const validate = v.validate(req.body, schema);
         
             if (validate.length) {
@@ -23,16 +24,17 @@ class contensController{
             }
         
             const data = {
-                judul : req.body.file,
+                judul : req.body.judul,
+                url : req.body.url,
                 kategori_id : 1
             };
         
-            const createdDocuments = await Documents.create(data);
+            const createdSurvei = await Surveys.create(data);
         
             return res.json({
                 status: 'success',
                 data: {
-                    createdDocuments
+                    createdSurveys
                 }
             });
         }catch (error){
@@ -42,7 +44,7 @@ class contensController{
         }
     }
 
-    async updateDocuments (req, res) {
+    async updateSurveys (req, res) {
         try {
             const schema = {
                 file: 'string|empty:false',
@@ -58,11 +60,11 @@ class contensController{
             }
         
             const id = req.params.id;
-            const documents = await Documents.findByPk(id);
-            if (!documents) {
+            const surveys = await Surveys.findByPk(id);
+            if (!surveys) {
                 return res.status(404).json({
                     status: 'error',
-                    message: 'Documents not found'
+                    message: 'Surveys not found'
                 });
             }
 
@@ -70,7 +72,7 @@ class contensController{
                 file : req.body.file,
             };
 
-            const updateContents  = await documents.update(data);
+            const updateContents  = await surveys.update(data);
 
             return res.json({
                 status: 'success',
@@ -85,11 +87,11 @@ class contensController{
         }
     }
 
-    async getDocument (req, res) {
+    async getSurveys (req, res) {
         try {
             const id = req.params.id;
-            const documents = await Documents.findByPk(id);
-            if (!documents) {
+            const surveys = await Surveys.findByPk(id);
+            if (!surveys) {
                 return res.status(404).json({
                     status: 'error',
                     message: 'content not found'
@@ -97,7 +99,7 @@ class contensController{
             }
             return res.json({
                 status: 'success',
-                data: documents
+                data: surveys
             });
         } catch (error) {
             return res.status(500).json({
@@ -106,20 +108,20 @@ class contensController{
         }
     }
 
-    async getDocuments (req, res) {
+    async getSurveys (req, res) {
         try {
-            const documentsIds = req.query.content_ids || [];
+            const surveysIds = req.query.content_ids || [];
 
             const sqlOPtions = {}
-            if (documentsIds.length) {
+            if (surveysIds.length) {
                 sqlOPtions.where = {
-                    id: documentsIds
+                    id: surveysIds
                 }
             }
-            const documents = await Documents.findAll(sqlOPtions);
+            const surveys = await Surveys.findAll(sqlOPtions);
             return res.json({
                 status: 'success',
-                data: documents
+                data: surveys
             });
         } catch (error) {
             return res.status(500).json({
@@ -128,19 +130,19 @@ class contensController{
         }
     }
 
-    async deleteDocuments(req,res){
+    async deleteSurveys (req,res){
         try{
             const id = req.params.id
             
-            const documents = await Contents.findByPk(id);
-            if (!documents) {
+            const surveys = await Contents.findByPk(id);
+            if (!surveys) {
                 return res.status(404).json({
                     status: 'error',
                     message: 'content not found'
                 });
             }
             
-            await Documents.destroy({
+            await Surveys.destroy({
                 where: {
                     id: id
                 }
@@ -157,4 +159,4 @@ class contensController{
         }
     }
 }
-module.exports = contensController;
+module.exports = surveysController;
