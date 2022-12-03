@@ -9,6 +9,7 @@ const usersRouter = require('./routes/users');
 const contentsRouter = require('./routes/contents');
 const categoriesRouter = require('./routes/categories');
 const documentsRouter = require('./routes/documents');
+const surveysRouter = require('./routes/surveys');
 const refreshTokensRouter = require('./routes/refreshTokens');
 
 const app = express();
@@ -25,5 +26,6 @@ app.use('/refresh_tokens', refreshTokensRouter);
 app.use('/contents',contentsRouter);
 app.use('/categories',categoriesRouter);
 app.use('/documents', documentsRouter);
+app.use('/surveys', surveysRouter);
 
 module.exports = app;

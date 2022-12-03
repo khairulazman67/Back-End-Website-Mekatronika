@@ -29,7 +29,7 @@ class surveysController{
                 kategori_id : 1
             };
         
-            const createdSurvei = await Surveys.create(data);
+            const createdSurveys = await Surveys.create(data);
         
             return res.json({
                 status: 'success',
@@ -47,7 +47,8 @@ class surveysController{
     async updateSurveys (req, res) {
         try {
             const schema = {
-                file: 'string|empty:false',
+                judul: 'string|empty:false',
+                url: 'string|empty:false'
             }
             
             const validate = v.validate(req.body, schema);
@@ -69,15 +70,16 @@ class surveysController{
             }
 
             const data = {
-                file : req.body.file,
+                judul : req.body.judul,
+                url : req.body.url,
             };
 
-            const updateContents  = await surveys.update(data);
+            const updateSurveys  = await surveys.update(data);
 
             return res.json({
                 status: 'success',
                 data: {
-                    updateContents
+                    updateSurveys
                 }
             });
         } catch (error) {
@@ -94,7 +96,7 @@ class surveysController{
             if (!surveys) {
                 return res.status(404).json({
                     status: 'error',
-                    message: 'content not found'
+                    message: 'surveys not found'
                 });
             }
             return res.json({
