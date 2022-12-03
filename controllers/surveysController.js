@@ -87,7 +87,7 @@ class surveysController{
         }
     }
 
-    async getSurveys (req, res) {
+    async getSurvey (req, res) {
         try {
             const id = req.params.id;
             const surveys = await Surveys.findByPk(id);
@@ -134,7 +134,7 @@ class surveysController{
         try{
             const id = req.params.id
             
-            const surveys = await Contents.findByPk(id);
+            const surveys = await Surveys.findByPk(id);
             if (!surveys) {
                 return res.status(404).json({
                     status: 'error',

@@ -132,7 +132,7 @@ class contensController{
         try{
             const id = req.params.id
             
-            const documents = await Contents.findByPk(id);
+            const documents = await Documents.findByPk(id);
             if (!documents) {
                 return res.status(404).json({
                     status: 'error',
