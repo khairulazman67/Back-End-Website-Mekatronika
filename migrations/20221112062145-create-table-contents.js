@@ -17,7 +17,7 @@ module.exports = {
         allowNull : false
       },
       isi :{
-        type : Sequelize.STRING,
+        type : Sequelize.TEXT('long'),
         allowNull : false
       },
       kategori_id :{
@@ -25,7 +25,7 @@ module.exports = {
         allowNull : false
       },
       ringkasan :{
-        type : Sequelize.STRING,
+        type : Sequelize.TEXT('long'),
         allowNull : false
       },
       foto:{
