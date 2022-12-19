@@ -5,6 +5,7 @@ const {
 } = require('../models');
 
 const sequelize = require('sequelize');
+const Op = sequelize.Op;
 
 const isBase64 = require('is-base64');
 const base64Img =  require('base64-img')
@@ -193,13 +194,29 @@ class contensController{
         try {
             const contenIds = req.query.content_ids || [];
 
+            const filters = req.query;
+
             const sqlOPtions = {}
+            sqlOPtions.order = [["id", "DESC"]]
             if (contenIds.length) {
                 sqlOPtions.where = {
                     id: contenIds
                 }
             }
-            sqlOPtions.order = [["id", "DESC"]]
+
+            if(filters.search){
+                sqlOPtions.where = {
+                    [Op.or]: [
+                        {judul:{
+                            [Op.like]: '%'+filters.search+'%'
+                        }}, 
+                        {ringkasan:{
+                            [Op.like]: '%'+filters.search+'%'
+                        }}
+                    ]
+                }
+            }
+            
             const contents = await Contents.findAll(sqlOPtions);
             return res.json({
                 status: 'success',
