@@ -11,6 +11,7 @@ const isBase64 = require('is-base64');
 const base64Img =  require('base64-img')
 const Validator = require('fastest-validator');
 const fs = require('fs');
+const { off } = require('process');
 const v = new Validator();
 
 class contensController{
@@ -194,10 +195,27 @@ class contensController{
         try {
             const contenIds = req.query.content_ids || [];
 
+            const offset = req.query.hasOwnProperty('offset')?parseInt(req.query.offset):0
+            const limit = req.query.hasOwnProperty('limit')?parseInt(req.query.limit):10
+            // const limit = 10
+            // const { offset = 0, limit = 10 } = parseInt(req.query);
+
+            // return res.json({
+            //     status: 'success',
+            //     limit : limit,
+            //     offset : offset,
+            //     // data: contents,
+            //     // total : total
+            // });
+
             const filters = req.query;
 
-            const sqlOPtions = {}
-            sqlOPtions.order = [["id", "DESC"]]
+            const sqlOPtions = {
+                order :[["id", "DESC"]],
+                // attributes : ['id'],
+                limit : limit,
+                offset : offset
+            }
             if (contenIds.length) {
                 sqlOPtions.where = {
                     id: contenIds
@@ -215,12 +233,16 @@ class contensController{
                         }}
                     ]
                 }
+                
             }
-            
+
+            const total = await Contents.count();
             const contents = await Contents.findAll(sqlOPtions);
+
             return res.json({
                 status: 'success',
-                data: contents
+                data: contents,
+                total : total
             });
         } catch (error) {
             return res.status(500).json({
