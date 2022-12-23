@@ -243,7 +243,7 @@ class contensController{
 
             if (kategori!=null){
                 sqlOPtions.where ={
-                        kategori_id : kategori
+                    kategori_id : kategori
                 }
             }
             if (contenIds.length) {
@@ -266,7 +266,7 @@ class contensController{
                 
             }
 
-            const total = await Contents.count();
+            const total = await Contents.count(sqlOPtions);
             const contents = await Contents.findAll(sqlOPtions);
             const data  = contents.map(item => {
                 item.foto = `${req.get('host')}/${item.foto}`;
