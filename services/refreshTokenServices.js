@@ -25,5 +25,9 @@ class RefreshTokenServices{
         });
         return token
     }
+
+    async asal(){
+        return 'dsadsajdhiksa dsajkdas'
+    }
 }
 module.exports = RefreshTokenServices

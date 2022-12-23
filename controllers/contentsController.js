@@ -34,8 +34,6 @@ class contensController{
                 });
             }
 
-            const image = req.body.foto;
-
             const categories = await Categories.findOne({
                 where: { id: req.body.kategori_id }
             });
@@ -47,26 +45,48 @@ class contensController{
                 });
             }
         
-            if (!isBase64(image, { mimeRequired: true })) {
-                return res.status(400).json({ status: 'error', message: 'invalid base64' });
-            }
+            const image = req.body.foto;
 
-            base64Img.img(image, './public/images', Date.now(), async (err, filepath) => {
-                if (err) {
-                return res.status(400).json({ status: 'error', message: err.message });
+            if(image){
+                if (!isBase64(image, { mimeRequired: true })) {
+                    return res.status(400).json({ status: 'error', message: 'invalid base64' });
                 }
 
-                const filename = filepath.split('/').pop();
+                base64Img.img(image, './public/images', Date.now(), async (err, filepath) => {
+                    if (err) {
+                    return res.status(400).json({ status: 'error', message: err.message });
+                    }
 
+                    const filename = filepath.split('/').pop();
+
+                    const data = {
+                        judul : req.body.judul,
+                        isi: req.body.isi,
+                        kategori_id: req.body.kategori_id,
+                        ringkasan: req.body.ringkasan,
+                        foto: `images/${filename}`,
+                    };
+                
+            
+                    const createdContens = await Contents.create(data);
+            
+                    return res.json({
+                        status: 'success',
+                        data: {
+                            createdContens
+                        }
+                    });
+
+                })
+            }
+            else{
                 const data = {
                     judul : req.body.judul,
                     isi: req.body.isi,
                     kategori_id: req.body.kategori_id,
                     ringkasan: req.body.ringkasan,
-                    foto: `images/${filename}`,
                 };
             
-        
                 const createdContens = await Contents.create(data);
         
                 return res.json({
@@ -75,8 +95,9 @@ class contensController{
                         createdContens
                     }
                 });
-
-            })
+            }
+            
+            
         }catch (error){
             return res.status(500).json({
                 msg: error.message
@@ -87,13 +108,22 @@ class contensController{
     async updateContents (req, res) {
         try {
             const schema = {
-                judul: 'string',
-                isi: 'string',
+                judul: 'string|empty:false',
+                isi: 'string|empty:false',
                 kategori_id: 'number',
                 ringkasan: 'string|optional',
                 foto: 'string|optional'
             }
-            
+
+            const id = req.params.id;
+            const contents = await Contents.findByPk(id);
+            if (!contents) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: 'content not found'
+                });
+            }
+        
             const validate = v.validate(req.body, schema);
         
             if (validate.length) {
@@ -102,7 +132,7 @@ class contensController{
                     message: validate
                 });
             }
-        
+
             const categories = await Categories.findOne({
                 where: { id: req.body.kategori_id }
             });
@@ -113,31 +143,58 @@ class contensController{
                     message: 'categories not available'
                 });
             }
-            const id = req.params.id;
-            const contents = await Contents.findByPk(id);
-            if (!contents) {
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'content not found'
+        
+            const image = req.body.foto;
+
+            if(image && isBase64(image, { mimeRequired: true })){
+                // if (!isBase64(image, { mimeRequired: true })) {
+                //     return res.status(400).json({ status: 'error', message: 'invalid base64' });
+                // }
+
+                base64Img.img(image, './public/images', Date.now(), async (err, filepath) => {
+                    if (err) {
+                        return res.status(400).json({ status: 'error', message: err.message });
+                    }
+
+                    const filename = filepath.split('/').pop();
+
+                    const data = {
+                        judul : req.body.judul,
+                        isi: req.body.isi,
+                        kategori_id: req.body.kategori_id,
+                        ringkasan: req.body.ringkasan,
+                        foto: `images/${filename}`,
+                    };
+                
+            
+                    const createdContens = await contents.update(data);
+            
+                    return res.json({
+                        status: 'success',
+                        data: {
+                            createdContens
+                        }
+                    });
+
+                })
+            }
+            else{
+                const data = {
+                    judul : req.body.judul,
+                    isi: req.body.isi,
+                    kategori_id: req.body.kategori_id,
+                    ringkasan: req.body.ringkasan,
+                };
+            
+                const createdContens = await contents.update(data);
+        
+                return res.json({
+                    status: 'success',
+                    data: {
+                        createdContens
+                    }
                 });
             }
-
-            const data = {
-                judul : req.body.judul,
-                isi: req.body.isi,
-                kategori_id: req.body.kategori_id,
-                ringkasan: req.body.ringkasan,
-                foto: req.body.foto
-            };
-
-            const updateContents  = await contents.update(data);
-
-            return res.json({
-                status: 'success',
-                data: {
-                    updateContents
-                }
-            });
         } catch (error) {
             return res.status(500).json({
                 msg: error.message
@@ -166,47 +223,14 @@ class contensController{
             });
         }
     }
-
-    async getContentByCat (req, res) {
-        try {
-            const id = req.params.id;
-            const contents = await Contents.findOne({
-                where: { kategori_id: id }
-            });
-            // const contents = await Contents.findByPk(id);
-            if (!contents) {
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'content not found'
-                });
-            }
-            return res.json({
-                status: 'success',
-                data: contents
-            });
-        } catch (error) {
-            return res.status(500).json({
-                msg: error.message
-            });
-        }
-    }
-
     async getContents (req, res) {
         try {
             const contenIds = req.query.content_ids || [];
 
             const offset = req.query.hasOwnProperty('offset')?parseInt(req.query.offset):0
             const limit = req.query.hasOwnProperty('limit')?parseInt(req.query.limit):10
-            // const limit = 10
-            // const { offset = 0, limit = 10 } = parseInt(req.query);
 
-            // return res.json({
-            //     status: 'success',
-            //     limit : limit,
-            //     offset : offset,
-            //     // data: contents,
-            //     // total : total
-            // });
+            const kategori = req.query.hasOwnProperty('kategori')?parseInt(req.query.kategori):null
 
             const filters = req.query;
 
@@ -215,6 +239,12 @@ class contensController{
                 // attributes : ['id'],
                 limit : limit,
                 offset : offset
+            }
+
+            if (kategori!=null){
+                sqlOPtions.where ={
+                        kategori_id : kategori
+                }
             }
             if (contenIds.length) {
                 sqlOPtions.where = {
@@ -238,10 +268,15 @@ class contensController{
 
             const total = await Contents.count();
             const contents = await Contents.findAll(sqlOPtions);
+            const data  = contents.map(item => {
+                item.foto = `${req.get('host')}/${item.foto}`;
+
+                return item;
+            })
 
             return res.json({
                 status: 'success',
-                data: contents,
+                data: data,
                 total : total
             });
         } catch (error) {
@@ -254,7 +289,6 @@ class contensController{
     async deleteContents(req,res){
         try{
             const id = req.params.id
-            
             const contents = await Contents.findByPk(id);
             if (!contents) {
                 return res.status(404).json({
