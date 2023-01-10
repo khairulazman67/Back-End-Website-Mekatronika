@@ -1,6 +1,8 @@
 const { 
     Lectures
 } = require('../models');
+const sequelize = require('sequelize');
+const Op = sequelize.Op;
 
 const isBase64 = require('is-base64');
 const base64Img =  require('base64-img')
@@ -71,22 +73,52 @@ class lecturesController{
     async getLectures (req, res) {
         try {
             const lecturesIds = req.query.content_ids || [];
+            const offset = req.query.hasOwnProperty('offset')?parseInt(req.query.offset):0
+            const limit = req.query.hasOwnProperty('limit')?parseInt(req.query.limit):4
 
-            const sqlOPtions = {}
+            const filters = req.query;
+
+            const sqlOPtions = {
+                limit : limit,
+                offset : offset
+            }
+
             if (lecturesIds.length) {
                 sqlOPtions.where = {
                     id: lecturesIds
                 }
             }
+            if(filters.search){
+                sqlOPtions.where = {
+                    [Op.or]: [
+                        {nama:{
+                            [Op.like]: '%'+filters.search+'%'
+                        }}, 
+                        {NIP:{
+                            [Op.like]: '%'+filters.search+'%'
+                        }},
+                        {NIDN:{
+                            [Op.like]: '%'+filters.search+'%'
+                        }},
+                        {ringkasan:{
+                            [Op.like]: '%'+filters.search+'%'
+                        }}
+                    ]
+                }
+                
+            }
                           
+            const total = await Lectures.count(sqlOPtions);
             const lectures = await Lectures.findAll(sqlOPtions);
+
             const mappedLectures = lectures.map((m) => {
                 m.foto = `${req.get('host')}/${m.foto}`;
                 return m;
             })
             return res.json({
                 status: 'success',
-                data: mappedLectures
+                data: mappedLectures,
+                total : total
             });
         } catch (error) {
             return res.status(500).json({
