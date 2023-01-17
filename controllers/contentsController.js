@@ -114,7 +114,7 @@ class contensController{
                 ringkasan: 'string|optional',
                 foto: 'string|optional'
             }
-
+            
             const id = req.params.id;
             const contents = await Contents.findByPk(id);
             if (!contents) {

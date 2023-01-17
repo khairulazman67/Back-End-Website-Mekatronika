@@ -6,9 +6,9 @@ const verifyToken = require('../middlewares/verifyToken');
 const lectures = new lecturessCtrl()
 
 router.post('/', lectures.createdLectures);
-// router.put('/:id', lectures.updatelectures);
+router.put('/:id', lectures.updatedLectures);
 router.get('/',lectures.getLectures);
-// router.get('/:id',lectures.getDocument);
+router.get('/:id',lectures.getLecture);
 router.delete('/:id',lectures.deleteLectures);
 
 module.exports = router;

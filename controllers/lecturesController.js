@@ -69,6 +69,71 @@ class lecturesController{
         }
     }
 
+    async updatedLectures (req, res){
+        try{
+            const schema = {
+                nama: 'string|empty:true',
+                NIDN: 'number|empty:true',
+                NIP: 'number|empty:true',
+                ringkasan: 'string|empty:true',
+                foto: 'string|empty:true'
+            }
+      
+            const validate = v.validate(req.body, schema);
+        
+            if (validate.length) {
+                return res.status(400).json({
+                    status: 'error',
+                    message: validate
+                });
+            }
+            const id = req.params.id;
+            const lectures = await Lectures.findByPk(id);
+            if (!lectures) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: 'lectures not found'
+                });
+            }
+
+            const image = req.body.foto;
+
+            if (!isBase64(image, { mimeRequired: true })) {
+                return res.status(400).json({ status: 'error', message: 'invalid base64' });
+            }
+
+            base64Img.img(image, './public/images', Date.now(), async (err, filepath) => {
+                if (err) {
+                return res.status(400).json({ status: 'error', message: err.message });
+                }
+
+                const filename = filepath.split('/').pop();
+
+                const data = {
+                    nama : req.body.nama,
+                    NIDN : req.body.NIDN,
+                    NIP : req.body.NIP,
+                    ringkasan : req.body.ringkasan,
+                    foto : `images/${filename}`,
+                };
+            
+                const updatedLectures = await lectures.update(data);
+            
+                return res.json({
+                    status: 'success',
+                    data: {
+                        updatedLectures
+                    }
+                });
+
+            })
+            
+        }catch (error){
+            return res.status(500).json({
+                msg: error.message
+            });
+        }
+    }
 
     async getLectures (req, res) {
         try {
@@ -119,6 +184,28 @@ class lecturesController{
                 status: 'success',
                 data: mappedLectures,
                 total : total
+            });
+        } catch (error) {
+            return res.status(500).json({
+                msg: error.message
+            });
+        }
+    }
+
+    async getLecture (req, res) {
+        try {
+            const id = req.params.id;
+            const lectures = await Lectures.findByPk(id);
+            if (!lectures) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: 'content not found'
+                });
+            }
+            lectures.foto = `${req.get('host')}/${lectures.foto}`
+            return res.json({
+                status: 'success',
+                data: lectures
             });
         } catch (error) {
             return res.status(500).json({

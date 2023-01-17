@@ -11,6 +11,18 @@ module.exports = {
         updated_at : new Date()
       },
       {
+        kategori: 'Pengumuman',
+        keterangan: '',
+        created_at : new Date(),
+        updated_at : new Date()
+      },
+      {
+        kategori: 'Sejarah',
+        keterangan: '',
+        created_at : new Date(),
+        updated_at : new Date()
+      },
+      {
         kategori: 'Tentang',
         keterangan: '',
         created_at : new Date(),
@@ -29,19 +41,25 @@ module.exports = {
         updated_at : new Date()
       },
       {
+        kategori: 'Kegiatan',
+        keterangan: '',
+        created_at : new Date(),
+        updated_at : new Date()
+      },
+      {
         kategori: 'SK',
         keterangan: '',
         created_at : new Date(),
         updated_at : new Date()
       },
       {
-        kategori: 'CPL',
+        kategori: 'Kurikulum',
         keterangan: '',
         created_at : new Date(),
         updated_at : new Date()
       },
       {
-        kategori: 'Pengumuman',
+        kategori: 'CPL',
         keterangan: '',
         created_at : new Date(),
         updated_at : new Date()
