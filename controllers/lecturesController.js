@@ -98,36 +98,53 @@ class lecturesController{
 
             const image = req.body.foto;
 
-            if (!isBase64(image, { mimeRequired: true })) {
-                return res.status(400).json({ status: 'error', message: 'invalid base64' });
+            // if (!isBase64(image, { mimeRequired: true })) {
+            //     return res.status(400).json({ status: 'error', message: 'invalid base64' });
+            // }
+            if(image && isBase64(image, { mimeRequired: true })){
+                base64Img.img(image, './public/images', Date.now(), async (err, filepath) => {
+                    if (err) {
+                    return res.status(400).json({ status: 'error', message: err.message });
+                    }
+
+                    const filename = filepath.split('/').pop();
+
+                    const data = {
+                        nama : req.body.nama,
+                        NIDN : req.body.NIDN,
+                        NIP : req.body.NIP,
+                        ringkasan : req.body.ringkasan,
+                        foto : `images/${filename}`,
+                    };
+                
+                    const updatedLectures = await lectures.update(data);
+                
+                    return res.json({
+                        status: 'success',
+                        data: {
+                            updatedLectures
+                        }
+                    });
+
+                })
             }
-
-            base64Img.img(image, './public/images', Date.now(), async (err, filepath) => {
-                if (err) {
-                return res.status(400).json({ status: 'error', message: err.message });
-                }
-
-                const filename = filepath.split('/').pop();
-
+            else{
                 const data = {
                     nama : req.body.nama,
                     NIDN : req.body.NIDN,
                     NIP : req.body.NIP,
                     ringkasan : req.body.ringkasan,
-                    foto : `images/${filename}`,
                 };
             
                 const updatedLectures = await lectures.update(data);
-            
+        
                 return res.json({
                     status: 'success',
                     data: {
                         updatedLectures
                     }
                 });
-
-            })
-            
+            }
         }catch (error){
             return res.status(500).json({
                 msg: error.message

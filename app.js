@@ -12,6 +12,7 @@ const documentsRouter = require('./routes/documents');
 const surveysRouter = require('./routes/surveys');
 const lecturesRouter = require('./routes/lectures');
 const refreshTokensRouter = require('./routes/refreshTokens');
+const studentsRouter = require('./routes/students');
 
 const cors = require('cors')
 
@@ -33,5 +34,6 @@ app.use('/categories',categoriesRouter);
 app.use('/documents', documentsRouter);
 app.use('/surveys', surveysRouter);
 app.use('/lectures',lecturesRouter);
+app.use('/students',studentsRouter);
 
 module.exports = app;
